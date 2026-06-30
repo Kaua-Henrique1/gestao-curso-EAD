@@ -1,0 +1,23 @@
+{
+  "nome": "aaa",
+  "trilhas": [
+    {
+      "nome": "Programação Orientada a Objetos",
+      "modulos": [
+        {
+          "nome": "Módulo 1: Classes e Objetos",
+          "aulas": [
+            {
+              "titulo": "Aula 1.1: O que são Atributos",
+              "duracaoMinutos": 15
+            },
+            {
+              "titulo": "Aula 1.2: Métodos e Construtores",
+              "duracaoMinutos": 25
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
