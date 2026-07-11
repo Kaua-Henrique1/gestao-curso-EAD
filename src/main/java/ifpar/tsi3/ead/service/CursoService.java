@@ -9,8 +9,6 @@ import com.google.gson.GsonBuilder;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 public class CursoService {
 
@@ -116,5 +114,65 @@ public class CursoService {
 
     public void editarNomeCurso(String novoNome) {
         this.cursoAtual.setNome(novoNome);
+    }
+
+    // -------------------------------------------------------------------------
+    // FUNCIONALIDADES: EDIÇÃO DE NÓS
+    // -------------------------------------------------------------------------
+
+    public boolean editarTrilha(Trilha trilha, String novoNome) {
+        if (trilha != null && novoNome != null && !novoNome.trim().isEmpty()) {
+            trilha.setNome(novoNome.trim());
+            return true;
+        }
+        return false;
+    }
+
+    public boolean editarModulo(Modulo modulo, String novoNome) {
+        if (modulo != null && novoNome != null && !novoNome.trim().isEmpty()) {
+            modulo.setNome(novoNome.trim());
+            return true;
+        }
+        return false;
+    }
+
+    public boolean editarAula(Aula aula, String novoTitulo, int novaDuracao) {
+        if (aula != null && novoTitulo != null && !novoTitulo.trim().isEmpty() && novaDuracao > 0) {
+            aula.setTitulo(novoTitulo.trim());
+            aula.setDuracaoMinutos(novaDuracao);
+            return true;
+        }
+        return false;
+    }
+
+    // -------------------------------------------------------------------------
+    // FUNCIONALIDADES: REORDENAÇÃO (SUBIR / DESCER)
+    // -------------------------------------------------------------------------
+
+    public boolean reordenarTrilha(Trilha trilha, int direcao) {
+        if (trilha == null) return false;
+        int indexAtual = cursoAtual.getTrilhas().indexOf(trilha);
+        if (indexAtual == -1) return false; // Trilha não encontrada
+
+        int novoIndex = indexAtual + direcao;
+        return cursoAtual.reordenarTrilha(indexAtual, novoIndex);
+    }
+
+    public boolean reordenarModulo(Trilha trilhaPai, Modulo modulo, int direcao) {
+        if (trilhaPai == null || modulo == null) return false;
+        int indexAtual = trilhaPai.getModulos().indexOf(modulo);
+        if (indexAtual == -1) return false;
+
+        int novoIndex = indexAtual + direcao;
+        return trilhaPai.reordenarModulo(indexAtual, novoIndex);
+    }
+
+    public boolean reordenarAula(Modulo moduloPai, Aula aula, int direcao) {
+        if (moduloPai == null || aula == null) return false;
+        int indexAtual = moduloPai.getAulas().indexOf(aula);
+        if (indexAtual == -1) return false;
+
+        int novoIndex = indexAtual + direcao;
+        return moduloPai.reordenarAula(indexAtual, novoIndex);
     }
 }
