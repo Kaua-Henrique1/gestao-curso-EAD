@@ -38,8 +38,13 @@ public class MainConsole {
         int opcao = -1;
         while (opcao != 0) {
             System.out.println("\n====== MENU DE OPERAÇÕES ======");
-            System.out.println("1 - Exportar Estrutura Completa para JSON");
-            System.out.println("2 - Mostrar nome do Curso Atual");
+            System.out.println("1 - Exibir Hierarquia do Curso");
+            System.out.println("2 - Buscar Conteúdo por Nome (Percurso)");
+            System.out.println("3 - Adicionar Nova Trilha");
+            System.out.println("4 - Remover Trilha");
+            System.out.println("5 - Editar Nome do Curso");
+            System.out.println("6 - Reordenar Trilhas");
+            System.out.println("7 - Exportar Estrutura (JSON / TXT)");
             System.out.println("0 - Sair");
             System.out.print("Escolha uma opção: ");
 
@@ -47,16 +52,62 @@ public class MainConsole {
                 opcao = Integer.parseInt(sc.nextLine());
                 switch (opcao) {
                     case 1:
-                        String nomeArquivo = "estrutura_curso.json";
-                        service.exportarParaJson(nomeArquivo);
-                        System.out.println("\n[SUCESSO] Arquivo '" + nomeArquivo + "' gerado na raiz do projeto!");
-                        System.out.println("Abra o arquivo no IntelliJ para ver a hierarquia linda em JSON.");
+                        System.out.println("\n--- Estrutura Atual ---");
+                        service.exportarParaTxt("temp_console.txt");
+                        System.out.println(java.nio.file.Files.readString(java.nio.file.Paths.get("temp_console.txt")));
                         break;
                     case 2:
-                        System.out.println("\nCurso: " + service.getCursoAtual().getNome());
+                        System.out.print("\nDigite o termo para buscar na árvore: ");
+                        String termo = sc.nextLine();
+                        System.out.println("\n--- Resultados da Busca ---");
+                        System.out.println(service.buscarConteudoPorNome(termo));
+                        break;
+                    case 3:
+                        System.out.print("\nDigite o nome da nova Trilha: ");
+                        String nomeTrilha = sc.nextLine();
+                        service.adicionarTrilha(nomeTrilha);
+                        System.out.println("Trilha adicionada com sucesso!");
+                        break;
+                    case 4:
+                        System.out.println("\n--- Remover Trilha ---");
+                        for (int i = 0; i < service.getCursoAtual().getTrilhas().size(); i++) {
+                            System.out.println(i + " - " + service.getCursoAtual().getTrilhas().get(i).getNome());
+                        }
+                        System.out.print("Digite o índice da trilha a ser removida: ");
+                        int indexRemover = Integer.parseInt(sc.nextLine());
+                        service.getCursoAtual().removerTrilha(indexRemover);
+                        System.out.println("Trilha removida (e todos os seus Módulos/Aulas em cascata).");
+                        break;
+                    case 5:
+                        System.out.println("\nNome atual: " + service.getCursoAtual().getNome());
+                        System.out.print("Digite o novo nome para o Curso: ");
+                        String novoNome = sc.nextLine();
+                        service.editarNomeCurso(novoNome);
+                        System.out.println("Nome do curso atualizado!");
+                        break;
+                    case 6:
+                        System.out.println("\n--- Reordenar Trilhas ---");
+                        for (int i = 0; i < service.getCursoAtual().getTrilhas().size(); i++) {
+                            System.out.println(i + " - " + service.getCursoAtual().getTrilhas().get(i).getNome());
+                        }
+                        System.out.print("Digite o índice atual da trilha: ");
+                        int indexAtual = Integer.parseInt(sc.nextLine());
+                        System.out.print("Digite o novo índice de destino: ");
+                        int novoIndex = Integer.parseInt(sc.nextLine());
+
+                        if (service.getCursoAtual().reordenarTrilha(indexAtual, novoIndex)) {
+                            System.out.println("Ordem atualizada com sucesso!");
+                        } else {
+                            System.out.println("Falha na reordenação. Verifique os índices.");
+                        }
+                        break;
+                    case 7:
+                        service.exportarParaJson("estrutura_curso.json");
+                        service.exportarParaTxt("estrutura_curso.txt");
+                        System.out.println("\n[SUCESSO] Arquivos JSON e TXT gerados na raiz do projeto!");
                         break;
                     case 0:
-                        System.out.println("Encerrando testador console...");
+                        System.out.println("Encerrando o sistema...");
                         break;
                     default:
                         System.out.println("Opção inválida.");
@@ -64,7 +115,9 @@ public class MainConsole {
             } catch (NumberFormatException e) {
                 System.out.println("Por favor, digite um número válido.");
             } catch (IOException e) {
-                System.out.println("Erro ao salvar o arquivo JSON: " + e.getMessage());
+                System.out.println("Erro ao gerar visualização: " + e.getMessage());
+            } catch (IndexOutOfBoundsException e) {
+                System.out.println("Erro: Índice inválido selecionado.");
             }
         }
         sc.close();

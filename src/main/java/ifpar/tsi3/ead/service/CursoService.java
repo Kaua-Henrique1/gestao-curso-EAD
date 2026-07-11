@@ -85,4 +85,36 @@ public class CursoService {
             modulo.adicionarAula(new Aula(tituloAula, duracao));
         }
     }
+    
+    public String buscarConteudoPorNome(String termo) {
+        String termoBusca = termo.toLowerCase();
+        StringBuilder resultado = new StringBuilder();
+
+        for (Trilha trilha : cursoAtual.getTrilhas()) {
+            if (trilha.getNome().toLowerCase().contains(termoBusca)) {
+                resultado.append("Trilha encontrada: ").append(trilha.getNome()).append("\n");
+            }
+            for (Modulo modulo : trilha.getModulos()) {
+                if (modulo.getNome().toLowerCase().contains(termoBusca)) {
+                    resultado.append("Módulo encontrado: ").append(modulo.getNome())
+                             .append(" (Dentro da Trilha: ").append(trilha.getNome()).append("\n");
+                }
+                for (Aula aula : modulo.getAulas()) {
+                    if (aula.getTitulo().toLowerCase().contains(termoBusca)) {
+                        resultado.append("Aula encontrada: ").append(aula.getTitulo())
+                                 .append(" (Dentro do Módulo: ").append(modulo.getNome()).append("\n");
+                    }
+                }
+            }
+        }
+
+        if (resultado.length() == 0) {
+            return "Nenhum resultado encontrado para: " + termo;
+        }
+        return resultado.toString();
+    }
+
+    public void editarNomeCurso(String novoNome) {
+        this.cursoAtual.setNome(novoNome);
+    }
 }

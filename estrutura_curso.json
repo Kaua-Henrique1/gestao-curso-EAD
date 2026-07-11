@@ -1,5 +1,5 @@
 {
-  "nome": "aaa",
+  "nome": "Gestão de Curso - EAD",
   "trilhas": [
     {
       "nome": "Programação Orientada a Objetos",
@@ -18,6 +18,10 @@
           ]
         }
       ]
+    },
+    {
+      "nome": "Estrutura de Dados",
+      "modulos": []
     }
   ]
 }
