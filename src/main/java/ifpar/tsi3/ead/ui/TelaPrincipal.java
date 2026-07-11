@@ -12,7 +12,6 @@ import java.awt.*;
 import java.io.IOException;
 
 public class TelaPrincipal extends JFrame {
-
     private final CursoService service;
     private final JTree tree;
     private final DefaultTreeModel treeModel;
@@ -21,8 +20,10 @@ public class TelaPrincipal extends JFrame {
     public TelaPrincipal() {
         // 1. Inicializa o serviço e carrega alguns dados de teste
         service = new CursoService("Gestão de Curso - EAD");
-        carregarDadosDeTeste();
 
+        if (service.getCursoAtual().getTrilhas().isEmpty()) {
+            carregarDadosDeTeste();
+        }
         // 2. Configurações da Janela Principal (JFrame)
         setTitle("Sistema EAD - Estrutura de Árvore");
         setSize(950, 550);
@@ -44,10 +45,11 @@ public class TelaPrincipal extends JFrame {
 
         JButton btnAdicionar = new JButton("Adicionar Filho");
         JButton btnEditar = new JButton("Editar Selecionado");
+        JButton btnExcluir = new JButton("Excluir Selecionado");
+        JButton btnBuscar = new JButton("Buscar Conteúdo");
         JButton btnSubir = new JButton("Subir (▲)");
         JButton btnDescer = new JButton("Descer (▼)");
-        JButton btnBuscar = new JButton("Buscar Conteúdo");
-        JButton btnExportar = new JButton("Exportar (JSON/TXT)");
+        JButton btnExportar = new JButton("Exportar (TXT)");
 
         painelBotoes.add(btnAdicionar);
         painelBotoes.add(btnEditar);
@@ -55,6 +57,7 @@ public class TelaPrincipal extends JFrame {
         painelBotoes.add(btnDescer);
         painelBotoes.add(btnBuscar);
         painelBotoes.add(btnExportar);
+        painelBotoes.add(btnExcluir);
 
         // 5. Adicionando Ações (Eventos) aos Botões
 
@@ -137,6 +140,51 @@ public class TelaPrincipal extends JFrame {
             atualizarArvoreVisual();
         });
 
+        // AÇÃO: EXCLUIR ITEM COM CONFIRMAÇÃO
+        btnExcluir.addActionListener(e -> {
+            DefaultMutableTreeNode noSelecionado = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+            if (noSelecionado == null) {
+                JOptionPane.showMessageDialog(this, "Selecione um item na árvore para excluir!", "Aviso", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            if (noSelecionado.isRoot()) {
+                JOptionPane.showMessageDialog(this, "Não é possível excluir o curso inteiro por aqui.", "Aviso", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            Object userObj = noSelecionado.getUserObject();
+
+            // Pergunta de confirmação
+            int confirmacao = JOptionPane.showConfirmDialog(this,
+                    "Tem certeza que deseja excluir este item?\nAVISO: Se ele possuir filhos (módulos ou aulas), eles também serão deletados para sempre!",
+                    "Confirmar Exclusão",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.WARNING_MESSAGE);
+
+            // Se o usuário clicar em "Sim" (YES)
+            if (confirmacao == JOptionPane.YES_OPTION) {
+                boolean sucesso = false;
+                DefaultMutableTreeNode noPai = (DefaultMutableTreeNode) noSelecionado.getParent();
+
+                if (userObj instanceof Trilha) {
+                    sucesso = service.excluirTrilha((Trilha) userObj);
+                } else if (userObj instanceof Modulo) {
+                    Trilha trilhaPai = (Trilha) noPai.getUserObject();
+                    sucesso = service.excluirModulo(trilhaPai, (Modulo) userObj);
+                } else if (userObj instanceof Aula) {
+                    Modulo moduloPai = (Modulo) noPai.getUserObject();
+                    sucesso = service.excluirAula(moduloPai, (Aula) userObj);
+                }
+
+                if (sucesso) {
+                    atualizarArvoreVisual();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Erro ao tentar excluir o item.", "Erro", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
         // AÇÃO: REORDENAR PARA CIMA (▲)
         btnSubir.addActionListener(e -> executarReordenacao(-1));
 
@@ -155,9 +203,8 @@ public class TelaPrincipal extends JFrame {
         // Ação: Exportar
         btnExportar.addActionListener(e -> {
             try {
-                service.exportarParaJson("estrutura_curso.json");
                 service.exportarParaTxt("estrutura_curso.txt");
-                JOptionPane.showMessageDialog(this, "Arquivos TXT e JSON exportados com sucesso na pasta do projeto!");
+                JOptionPane.showMessageDialog(this, "Arquivo TXT exportado com sucesso na pasta do projeto!");
             } catch (IOException ex) {
                 JOptionPane.showMessageDialog(this, "Erro ao exportar: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
             }
@@ -235,12 +282,5 @@ public class TelaPrincipal extends JFrame {
         Modulo modulo1 = trilhaPoo.getModulos().get(0);
         service.adicionarAulaNoModulo(modulo1, "Aula 1.1: O que são Atributos", 15);
         service.adicionarAulaNoModulo(modulo1, "Aula 1.2: Métodos e Construtores", 25);
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            TelaPrincipal tela = new TelaPrincipal();
-            tela.setVisible(true);
-        });
     }
 }

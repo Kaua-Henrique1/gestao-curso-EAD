@@ -16,12 +16,21 @@
               "duracaoMinutos": 25
             }
           ]
+        },
+        {
+          "nome": "11111",
+          "aulas": [
+            {
+              "titulo": "Ola mundo 2",
+              "duracaoMinutos": 30
+            },
+            {
+              "titulo": "Ola mundo",
+              "duracaoMinutos": 25
+            }
+          ]
         }
       ]
-    },
-    {
-      "nome": "Estrutura de Dados",
-      "modulos": []
     }
   ]
 }
