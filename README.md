@@ -15,7 +15,7 @@ O sistema é um CRUD completo aplicado a uma estrutura de dados em árvore, com 
 * **Edição In-Place:** Alteração rápida de nomes (Curso, Trilhas, Módulos) e informações de Aulas (título e duração em minutos).
 * **Exclusão em Cascata:** Ao excluir um nó pai (como uma Trilha), todos os seus filhos (Módulos e Aulas) são removidos automaticamente, com aviso de confirmação de segurança.
 * **Reordenação (Subir/Descer):** Permite alterar a ordem das Trilhas, Módulos ou Aulas diretamente na interface gráfica.
-* **Busca de Conteúdo:** Varredura completa na árvore para encontrar termos específicos nos títulos, retornando o caminho exato do item encontrado.
+* **Busca de Conteúdo:** Implementação de um algoritmo de travessia em árvore (Busca em Profundidade / Pré-ordem) para encontrar termos nos nós. A interface gráfica expande-se automaticamente, traçando o caminho exato até ao item encontrado.
 * **Persistência de Dados (JSON):** Salvamento automático a cada alteração feita na interface usando a biblioteca **Gson**. O sistema sempre volta de onde parou.
 * **Exportação de Relatórios:** Geração de arquivos `.txt` estruturados com tabulações.
 
@@ -42,7 +42,7 @@ Como o projeto foi construído utilizando **Maven**, o NetBeans o reconhece nati
 6. **Para Compilar:** Clique com o botão direito sobre o nome do projeto na aba *Projects* e selecione **Clean and Build** (Limpar e Construir).
 7. **Para Executar:**
     * Clique com o botão direito sobre o projeto e selecione **Run** (Executar).
-    * *Alternativa:* Navegue até `Source Packages` > `ifpar.tsi3.ead` > clique com o botão direito no arquivo **`Main.java`** e selecione **Run File** (Executar Arquivo).
+    * *Alternativa:* Navegue até `Source Packages` > `ifpar.tsi3.ead` > clique com o botão direito no arquivo **`GeradorCursoEad.java`** e selecione **Run File** (Executar Arquivo).
 
 ---
 
