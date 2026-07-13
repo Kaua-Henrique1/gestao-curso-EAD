@@ -211,13 +211,6 @@ public class CursoService {
         return resultado.toString();
     }
 
-    public void exportarParaJson(String caminhoArquivo) throws IOException {
-        String jsonFormatado = gson.toJson(this.cursoAtual);
-        try (FileWriter writer = new FileWriter(caminhoArquivo)) {
-            writer.write(jsonFormatado);
-        }
-    }
-
     public void exportarParaTxt(String caminhoArquivo) throws IOException {
         StringBuilder sb = new StringBuilder();
         sb.append("CURSO: ").append(cursoAtual.getNome()).append("\n");
