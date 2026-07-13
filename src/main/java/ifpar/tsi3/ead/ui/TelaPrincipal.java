@@ -191,12 +191,22 @@ public class TelaPrincipal extends JFrame {
         // AÇÃO: REORDENAR PARA BAIXO (▼)
         btnDescer.addActionListener(e -> executarReordenacao(1));
 
-        // Ação: Buscar na Árvore
-        btnBuscar.addActionListener(e -> {
+       btnBuscar.addActionListener(e -> {
             String termo = JOptionPane.showInputDialog(this, "Digite o termo para buscar (Ex: Aula 1):");
             if (termo != null && !termo.trim().isEmpty()) {
-                String resultado = service.buscarConteudoPorNome(termo);
-                JOptionPane.showMessageDialog(this, resultado, "Resultado da Busca", JOptionPane.INFORMATION_MESSAGE);
+                
+                // Inicia o percurso recursivo a partir da Raiz
+                DefaultMutableTreeNode noEncontrado = buscarNoRecursivo(rootNode, termo.toLowerCase());
+                
+                if (noEncontrado != null) {
+                    // Expande a árvore até o nó encontrado
+                    javax.swing.tree.TreePath caminho = new javax.swing.tree.TreePath(noEncontrado.getPath());
+                    tree.setSelectionPath(caminho);
+                    tree.scrollPathToVisible(caminho);
+                    JOptionPane.showMessageDialog(this, "Item encontrado na árvore!", "Busca Concluída", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Nenhum resultado encontrado para: " + termo, "Aviso", JOptionPane.INFORMATION_MESSAGE);
+                }
             }
         });
 
@@ -282,5 +292,23 @@ public class TelaPrincipal extends JFrame {
         Modulo modulo1 = trilhaPoo.getModulos().get(0);
         service.adicionarAulaNoModulo(modulo1, "Aula 1.1: O que são Atributos", 15);
         service.adicionarAulaNoModulo(modulo1, "Aula 1.2: Métodos e Construtores", 25);
+    }
+
+    private DefaultMutableTreeNode buscarNoRecursivo(DefaultMutableTreeNode noAtual, String termo) {
+        String nomeNo = noAtual.getUserObject().toString().toLowerCase();
+        
+        if (nomeNo.contains(termo)) {
+            return noAtual; 
+        }
+        
+        for (int i = 0; i < noAtual.getChildCount(); i++) {
+            DefaultMutableTreeNode filho = (DefaultMutableTreeNode) noAtual.getChildAt(i);
+            DefaultMutableTreeNode resultado = buscarNoRecursivo(filho, termo);
+            
+            if (resultado != null) {
+                return resultado;
+            }
+        }
+        return null;
     }
 }
